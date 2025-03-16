@@ -28,10 +28,8 @@ def get_media_info():
                 metadata = player.Get('org.mpris.MediaPlayer2.Player', 'Metadata', dbus_interface='org.freedesktop.DBus.Properties')
                 title = metadata.get('xesam:title', 'Unknown Title')
                 artist = metadata.get('xesam:artist', ['Unknown Artist'])[0]
-        
-                # Limit the title to 50 characters
+                 # Limit the title to 50 characters
                 title = title[:50]
-                
                 if title and artist:
                     return f"🎵 {title} - {artist}"  # Return title and artist without player name
             except dbus.DBusException:
@@ -46,12 +44,36 @@ def get_media_info():
 # Function to get GPU usage (assuming NVIDIA GPU with nvidia-smi)
 def get_gpu_usage():
     try:
+        # Run nvidia-smi to get GPU stats
         result = subprocess.run(['nvidia-smi', '--query-gpu=utilization.gpu,memory.free,memory.total', '--format=csv,noheader,nounits'], capture_output=True, text=True)
+
+        # Split the result into the individual GPU stats (usage, free memory, total memory)
         gpu_stats = result.stdout.strip().split(', ')
+
+        # Check if we have the expected number of stats (should be 3)
+        if len(gpu_stats) != 3:
+            return "🎮 Error retrieving GPU stats"
+
+        # Parse GPU stats
         gpu_usage = gpu_stats[0]  # GPU usage percentage
-        gpu_memory_free = round(int(gpu_stats[1]) / 1024, 1)  # Convert MB to GB
-        gpu_memory_total = round(int(gpu_stats[2]) / 1024, 1)  # Convert MB to GB
+        gpu_memory_free = round(int(gpu_stats[1]) / 1024, 1)  # Convert free memory from MB to GB
+        gpu_memory_total = round(int(gpu_stats[2]) / 1024, 1)  # Convert total memory from MB to GB
+        gpu_memory_used = round(gpu_memory_total - gpu_memory_free, 1)  # Calculate used memory in GB
+
+        # Ensure the VRAM values are non-zero and correctly parsed
+        if gpu_memory_free == 0 or gpu_memory_total == 0:
+            return "🎮 Error retrieving GPU VRAM values"
+
+        # Return the formatted GPU usage info
+        return f"🎮 {gpu_usage}% | {gpu_memory_used}GB / {gpu_memory_total}GB"
+
+    except Exception as e:
+        print(f"Error getting GPU usage: {e}")
+        return "🎮 No GPU or error retrieving GPU stats"
+
+        # Return the formatted GPU usage info
         return f"🎮 {gpu_usage}% | {gpu_memory_free}GB / {gpu_memory_total}GB"
+
     except Exception as e:
         print(f"Error getting GPU usage: {e}")
         return "🎮 No GPU or error retrieving GPU stats"

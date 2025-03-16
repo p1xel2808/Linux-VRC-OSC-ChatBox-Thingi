@@ -45,8 +45,9 @@ def get_media_info():
                 metadata = player.Get('org.mpris.MediaPlayer2.Player', 'Metadata', dbus_interface='org.freedesktop.DBus.Properties')
                 title = metadata.get('xesam:title', 'Unknown Title')
                 artist = metadata.get('xesam:artist', ['Unknown Artist'])[0]
-                 # Limit the title to 50 characters
-                title = title[:50]
+                 # Limit the title to 25 characters
+                title = title[:25]
+                artist = artist[:15]
                 if title and artist:
                     return f"🎵 {title} - {artist}"  # Return title and artist without player name
             except dbus.DBusException:

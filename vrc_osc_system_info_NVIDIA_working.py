@@ -6,6 +6,23 @@ from pythonosc import udp_client
 import dbus
 import subprocess
 
+# Function to get the current Linux distribution without external packages
+def get_linux_distro():
+    try:
+        with open("/etc/os-release") as f:
+            lines = f.readlines()
+            # Find lines that contain "NAME" and "VERSION"
+            distro_name = ""
+            distro_version = ""
+            for line in lines:
+                if line.startswith("NAME="):
+                    distro_name = line.strip().split("=")[1].replace('"', '')
+                elif line.startswith("VERSION="):
+                    distro_version = line.strip().split("=")[1].replace('"', '')
+            return f"🐧 {distro_name} {distro_version}"
+    except FileNotFoundError:
+        return "🐧 Unknown Linux Distro"
+
 # Setup OSC Client for VRChat (adjust IP and port if necessary)
 osc_client = udp_client.SimpleUDPClient("127.0.0.1", 9000)  # VRChat's default OSC port
 
@@ -71,13 +88,6 @@ def get_gpu_usage():
         print(f"Error getting GPU usage: {e}")
         return "🎮 No GPU or error retrieving GPU stats"
 
-        # Return the formatted GPU usage info
-        return f"🎮 {gpu_usage}% | {gpu_memory_free}GB / {gpu_memory_total}GB"
-
-    except Exception as e:
-        print(f"Error getting GPU usage: {e}")
-        return "🎮 No GPU or error retrieving GPU stats"
-
 # Function to get CPU and RAM usage, along with CPU GHz and max RAM
 def get_system_usage():
     try:
@@ -104,9 +114,10 @@ def send_data_to_vrchat():
         media_info = get_media_info()  # Get the current playing media info
         cpu_usage, cpu_ghz, ram_gb, max_ram_gb = get_system_usage()
         gpu_usage = get_gpu_usage()
+        linux_distro = get_linux_distro()  # Get the Linux distribution
 
         # Prepare the message to send
-        message = f"⏰ {current_time}\n{media_info}\n💻 {cpu_usage}% @ {cpu_ghz}GHz\n💾 {ram_gb}GB / {max_ram_gb}GB\n{gpu_usage}"
+        message = f"{linux_distro}\n⏰ {current_time}\n{media_info}\n💻 {cpu_usage}% @ {cpu_ghz}GHz\n💾 {ram_gb}GB / {max_ram_gb}GB\n{gpu_usage}"
 
         # Truncate the message if it's too long
         if len(message) > MAX_MESSAGE_LENGTH:

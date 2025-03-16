@@ -52,15 +52,17 @@ def get_gpu_usage():
         print(f"Error getting GPU usage: {e}")
         return "🎮 No GPU or error retrieving GPU stats"
 
-# Function to get CPU and RAM usage
+# Function to get CPU and RAM usage, along with CPU GHz and max RAM
 def get_system_usage():
     try:
         cpu = psutil.cpu_percent(interval=1)
+        cpu_ghz = round(psutil.cpu_freq().current / 1000, 2)  # CPU frequency in GHz
         ram_gb = round(psutil.virtual_memory().used / (1024**3), 1)  # Used RAM in GB
-        return cpu, ram_gb
+        max_ram_gb = round(psutil.virtual_memory().total / (1024**3), 1)  # Total RAM in GB
+        return cpu, cpu_ghz, ram_gb, max_ram_gb
     except Exception as e:
         print(f"Error getting system usage: {e}")
-        return "Error", "Error"
+        return "Error", "Error", "Error", "Error"
 
 # Function to get current time (only time, no date)
 def get_current_time():
@@ -74,11 +76,11 @@ def send_data_to_vrchat():
         # Get system data
         current_time = get_current_time()  # Get the current time (only time)
         media_info = get_media_info()  # Get the current playing media info
-        cpu_usage, ram_gb = get_system_usage()
+        cpu_usage, cpu_ghz, ram_gb, max_ram_gb = get_system_usage()
         gpu_usage = get_gpu_usage()
 
         # Prepare the message to send
-        message = f"⏰ {current_time}\n{media_info}\n💻 {cpu_usage}%\n💾 {ram_gb}GB\n{gpu_usage}"
+        message = f"⏰ {current_time}\n{media_info}\n💻 {cpu_usage}% @ {cpu_ghz}GHz\n💾 {ram_gb}GB / {max_ram_gb}GB\n{gpu_usage}"
 
         # Truncate the message if it's too long
         if len(message) > MAX_MESSAGE_LENGTH:

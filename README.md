@@ -50,3 +50,4 @@ Run the script: You can run the script using Python:
 
     This will start the GUI and the script will begin monitoring system stats and sending them to VRChat (via OSC). The GUI allows you to toggle the information you want to send (CPU, RAM, GPU, media info, time, etc.).
 
+Discord:pxls_avis

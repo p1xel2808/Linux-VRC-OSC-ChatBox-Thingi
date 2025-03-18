@@ -95,7 +95,7 @@ def get_current_time(is_24hr=True):
 class SystemInfoUI(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("System Info and Chat")
+        self.title("VRC OSC Chatbox Stats")
         self.geometry("600x750")  # Increased size for better visibility
         self.protocol("WM_DELETE_WINDOW", self.on_closing)  # Handle window close event
         self.is_sending = False
@@ -148,7 +148,7 @@ class SystemInfoUI(tk.Tk):
         self.status_label.pack(pady=10)
 
         # Chatbox Section
-        self.chat_label = ttk.Label(self, text="Enter message to send to VRChat:", style="TLabel")
+        self.chat_label = ttk.Label(self, text="Enter a message:", style="TLabel")
         self.chat_label.pack(pady=15)
 
         self.chat_text = tk.Text(self, height=5, width=45, font=("Arial", 12))  # Increased font size for better readability

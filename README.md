@@ -1,3 +1,4 @@
+!WARNING! !MAY CAUSE SYSTEM INSTABILITY!
 On Arch Linux
 
     Update your system (optional but recommended):
